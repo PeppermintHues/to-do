@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #b5c7ff, #e0b3ff);
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        h1 {
+            font-size: 24px;
+            color: #6b5b95;
+        }
+        textarea {
+            width: 90%;
+            height: 100px;
+            padding: 10px;
+            border: 2px solid #d3b3ff;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #b5c7ff;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #9da5ff;
+        }
+        .task-card {
+            background: #f0e5ff;
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 18px;
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-card:hover {
+            background: #e0b3ff;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .delete-btn {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .delete-btn:hover {
+            background: #ff4c4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Task Manager</h1>
+
+        <textarea id="bulkInput" placeholder="Paste your tasks here..."></textarea>
+        <button onclick="importTasks()">Import Tasks</button>
+
+        <div id="taskContainer"></div>
+
+        <p id="taskCount">Tasks left: 0</p>
+    </div>
+
+    <script>
+        let tasks = [];
+
+        function importTasks() {
+            let inputText = document.getElementById("bulkInput").value;
+            let lines = inputText.split('\n');
+            tasks = [];
+            let taskContainer = document.getElementById("taskContainer");
+            taskContainer.innerHTML = "";
+
+            lines.forEach(line => {
+                if (line.trim() !== "") {
+                    let task = { text: line.trim(), completed: false };
+                    tasks.push(task);
+                }
+            });
+            updateTaskList();
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            updateTaskList();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            updateTaskList();
+        }
+
+        function updateTaskList() {
+            let taskContainer = document.getElementById("taskContainer");
+            taskContainer.innerHTML = "";
+
+            tasks.forEach((task, index) => {
+                let taskDiv = document.createElement("div");
+                taskDiv.className = "task-card";
+                taskDiv.innerHTML = `
+                    <span>
+                        <input type='checkbox' onclick='toggleTask(${index})' ${task.completed ? "checked" : ""}>${task.text}
+                    </span>
+                    <button class='delete-btn' onclick='deleteTask(${index})'>❌</button>
+                `;
+                taskContainer.appendChild(taskDiv);
+            });
+
+            document.getElementById("taskCount").innerText = `Tasks left: ${tasks.filter(t => !t.completed).length}`;
+        }
+    </script>
+</body>
+</html>
